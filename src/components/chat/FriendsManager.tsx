@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { UserPlus, Users, Clock } from 'lucide-react';
+import { UserPlus, Users, Clock, Compass } from 'lucide-react';
 import UserSearch from './UserSearch';
 import FriendRequests from './FriendRequests';
+import DiscoverUsers from './DiscoverUsers';
 import { useFriend } from '../../contexts/FriendContext';
 
 interface FriendsManagerProps {
@@ -15,13 +16,13 @@ interface FriendsManagerProps {
 }
 
 const FriendsManager: React.FC<FriendsManagerProps> = ({ isOpen, onClose }) => {
-  const { receivedRequests, friends } = useFriend();
+  const { receivedRequests, friends, discoverableUsers } = useFriend();
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
-      <Card className="w-full max-w-2xl max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+      <Card className="w-full max-w-4xl max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Users className="w-5 h-5" />
@@ -33,11 +34,18 @@ const FriendsManager: React.FC<FriendsManagerProps> = ({ isOpen, onClose }) => {
         </CardHeader>
         
         <CardContent className="p-0">
-          <Tabs defaultValue="search" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mx-4 mb-4">
+          <Tabs defaultValue="discover" className="w-full">
+            <TabsList className="grid w-full grid-cols-4 mx-4 mb-4">
+              <TabsTrigger value="discover" className="gap-2">
+                <Compass className="w-4 h-4" />
+                Discover
+                <Badge variant="secondary" className="ml-1 px-1 py-0 text-xs">
+                  {discoverableUsers.length}
+                </Badge>
+              </TabsTrigger>
               <TabsTrigger value="search" className="gap-2">
                 <UserPlus className="w-4 h-4" />
-                Find Friends
+                Search
               </TabsTrigger>
               <TabsTrigger value="requests" className="gap-2">
                 <Clock className="w-4 h-4" />
@@ -50,7 +58,7 @@ const FriendsManager: React.FC<FriendsManagerProps> = ({ isOpen, onClose }) => {
               </TabsTrigger>
               <TabsTrigger value="friends" className="gap-2">
                 <Users className="w-4 h-4" />
-                My Friends
+                Friends
                 <Badge variant="secondary" className="ml-1 px-1 py-0 text-xs">
                   {friends.length}
                 </Badge>
@@ -58,6 +66,10 @@ const FriendsManager: React.FC<FriendsManagerProps> = ({ isOpen, onClose }) => {
             </TabsList>
             
             <div className="px-4 pb-4 max-h-96 overflow-y-auto">
+              <TabsContent value="discover" className="mt-0">
+                <DiscoverUsers />
+              </TabsContent>
+              
               <TabsContent value="search" className="mt-0">
                 <UserSearch />
               </TabsContent>
@@ -72,7 +84,7 @@ const FriendsManager: React.FC<FriendsManagerProps> = ({ isOpen, onClose }) => {
                     <div className="text-center py-8 text-muted-foreground">
                       <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
                       <p>No friends yet</p>
-                      <p className="text-sm">Start by searching for users to add!</p>
+                      <p className="text-sm">Start by discovering users to add!</p>
                     </div>
                   ) : (
                     friends.map((friend) => (
